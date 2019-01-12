@@ -8,8 +8,11 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.context.annotation.Import;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 
+
+@EnableScheduling
 @SpringBootApplication(exclude={DataSourceAutoConfiguration.class})
 @Import({DynamicDataSourceConfig.class})
 public class RenrenApplication extends SpringBootServletInitializer {
