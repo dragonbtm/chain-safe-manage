@@ -9,18 +9,20 @@ import io.renren.config.JedisNameConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-import org.springframework.web.socket.server.standard.SpringConfigurator;
+import org.springframework.web.socket.client.WebSocketClient;
 
 import javax.websocket.*;
 import javax.websocket.server.ServerEndpoint;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Map;
 
 
 /**
  * webSocket 服务端
  */
-@ServerEndpoint(value = "/websocket", configurator = SpringConfigurator.class)
+@ServerEndpoint(value = "/websocket")
 @Component
 public class WebSocketServer {
     private static final Logger log = LoggerFactory.getLogger(WebSocketServer.class);
@@ -29,7 +31,6 @@ public class WebSocketServer {
 
     @OnOpen
     public void onOpen(Session session) {
-        client = new WebSocketClient();
         log.info("Websocket Open:" + session.getId());
     }
 
@@ -147,18 +148,36 @@ public class WebSocketServer {
             log.info("userid==null");
             return;
         }
-        // 先删除
-        CommonDataDefine.wsMgUserMap.remove(userid);
-        // bizpush:val:mguser:node
-        JedisAPI.delete(JedisNameConstants.VAL_BIZPUSH_MGUSER_NODE + ":" + userid);
-        // 后绑定
-        CommonDataDefine.wsMgUserMap.put(userid, session);
-        // bizpush:val:mguser:node:"userid"
-        JedisAPI.set(JedisNameConstants.VAL_BIZPUSH_MGUSER_NODE + ":" + userid, CommonConfig.NODENO);
-        String backMessage = "{\"comm\":\"" + comm + "\",\"userid\":\"" + userid + "\",\"ctime\":\"" + ctime
-                + "\",\"value\":\"ok\"}";
-        session.getAsyncRemote().sendText(backMessage);
-        log.info("Login Process End: Userid : " + userid);
+        //创建与区块链间的通讯
+        String url = CommonConfig.getWsUrl() + CommonConfig.getWsUrl();
+        URI uri = null;
+        try {
+            uri = new URI(url);
+            org.java_websocket.client.WebSocketClient client = new MyWebSocketClient(uri);
+            client.connect();
+
+            // 先删除
+            CommonDataDefine.wsMgUserMap.remove(userid);
+            CommonDataDefine.wsMgClientMap.remove(userid);
+
+            // bizpush:val:mguser:node
+            JedisAPI.delete(JedisNameConstants.VAL_BIZPUSH_MGUSER_NODE + ":" + userid);
+
+            // 后绑定
+            CommonDataDefine.wsMgUserMap.put(userid, session);
+            CommonDataDefine.wsMgClientMap.put(userid,client);
+
+
+            // bizpush:val:mguser:node:"userid"
+            JedisAPI.set(JedisNameConstants.VAL_BIZPUSH_MGUSER_NODE + ":" + userid, CommonConfig.NODENO);
+            String backMessage = "{\"comm\":\"" + comm + "\",\"userid\":\"" + userid + "\",\"ctime\":\"" + ctime
+                    + "\",\"value\":\"ok\"}";
+            session.getAsyncRemote().sendText(backMessage);
+            log.info("Login Process End: Userid : " + userid);
+
+        } catch (URISyntaxException e) {
+            log.error("登录失败~!" ,e);
+        }
     }
 
     /**

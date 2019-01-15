@@ -1,12 +1,17 @@
 package io.renren.config;
 
-import com.corundumstudio.socketio.SocketIOClient;
+import io.socket.client.Socket;
+import org.java_websocket.client.WebSocketClient;
 
 import javax.websocket.Session;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class CommonDataDefine {
-    public static Map<String, Session> wsMgUserMap = new ConcurrentHashMap<String, Session>();
-    public static Map<String, SocketIOClient> socketIOClientMap = new ConcurrentHashMap<>();
+
+    public static Map<String, Session> wsMgUserMap = new ConcurrentHashMap<>();
+
+    public static Map<String, WebSocketClient> wsMgClientMap = new ConcurrentHashMap<>();
+
+    public static Map<String, Socket> socketIOClientMap = new ConcurrentHashMap<>();
 }

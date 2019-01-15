@@ -9,6 +9,9 @@ server:
   servlet:
     context-path: /
 
+client:
+  ws_protocol: ws://
+  wsUrl: 192.168.5.149:8286
 
 spring:
   # 环境 dev|test|prod
