@@ -3,6 +3,8 @@ package com.chain.modules.app.socket.socketio;
 import com.chain.common.utils.StringUtils;
 import com.chain.config.CommonConfig;
 import com.chain.config.CommonDataDefine;
+import com.chain.modules.app.entity.message.WebSocketMessage;
+import io.socket.client.Ack;
 import io.socket.client.IO;
 import io.socket.client.Socket;
 import io.socket.emitter.Emitter;
@@ -11,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.URISyntaxException;
+import java.time.Instant;
 
 /**
  * @Author: zz
@@ -85,10 +88,15 @@ public class SocketIoClient {
             socket.on(Socket.EVENT_CONNECT, new Emitter.Listener() {
                 @Override
                 public void call(Object... args) {
+                    log.info("socketio [explore] 链接成功~!");
                     System.out.println("connect");
-                    socket.close();
+//                    socket.close();
                 }
             });
+            socket.on(Socket.EVENT_PING,(args)->{
+                socket.send("pong");
+            });
+
             socket.io().on(io.socket.engineio.client.Socket.EVENT_CLOSE, new Emitter.Listener() {
                 @Override
                 public void call(Object... args) {
@@ -97,9 +105,34 @@ public class SocketIoClient {
                 }
             });
 
+            socket.on("start",(args)->{
+                sendtoexplore(args);
+            });
+            socket.on("next",(args)->{
+                sendtoexplore(args);
+            });
+            socket.on("prev",(args)->{
+                sendtoexplore(args);
+            });
+            socket.on("new",(args)->{
+                sendtoexplore(args);
+            });
+            socket.on("info",(args)->{
+                sendtoexplore(args);
+            });
+            socket.on("highlightNode",(args)->{
+                sendtoexplore(args);
+            });
+            socket.on("nextPageTransactions",(args)->{
+                sendtoexplore(args);
+            });
+            socket.on("addressInfo",(args)->{
+                sendtoexplore(args);
+            });
+
 
             socket.open();
-            log.info("socketio [explore] 链接成功~!");
+
             CommonDataDefine.socketIOClientMap.put(CommonConfig.ExplorerName,socket);
 
         } catch (URISyntaxException e) {
@@ -108,12 +141,35 @@ public class SocketIoClient {
 
     }
 
+    /**
+     * 发送数据到浏览器
+     * @param args
+     */
+    private void sendtoexplore(Object[] args) {
+        CommonDataDefine.wsMgUserMap.forEach((key, session)->{
+            String backMessage = new WebSocketMessage.Builder()
+                    .userid(key)
+                    .ctime(Instant.now().toString())
+                    .subject("login")
+                    .type("login")
+                    .value(args)
+                    .vers(CommonConfig.getVers())
+                    .build()
+                    .backUpMessage();
+            session.getAsyncRemote().sendText(backMessage);
+        });
+    }
+
 
     public static void main(String[] args) throws URISyntaxException {
 
         Socket socket = SocketIoClient.getConnect("http://192.168.5.149:8089");
-        while(true)
-            socket.emit("start","");
+            socket.emit("start","",(Ack)(parms)->{
+                System.out.println(parms);
+                socket.on("start",(p)->{
+                    System.out.println(p);
+                });
+            });
 
 
 

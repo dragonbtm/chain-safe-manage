@@ -211,7 +211,10 @@ public class WebSocketServer {
      */
     private void handleExplorer(String ruserid,String type, String subject ,Object data ,String vers , Session session) {
         Socket socket = SocketIoClient.getConnect();
-        socket.emit(subject,data);
+        socket.emit(subject,data,(Ack)(args)->{
+
+        });
+
     }
 
 
