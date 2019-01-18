@@ -35,8 +35,14 @@ public class WebSocketMessage extends BaseMessage{
 
 
     public String backUpMessage() {
+        String data;
+        try {
+            Object obj =  ((Object[])value)[0];
+            data = obj.toString();
+        } catch (Exception e) {
+            data = "{\"result\" : " + JSON.toJSONString(value) + "}" ;
+        }
 
-        value = JSON.toJSONString(value);
 
         String backMessage =
                 "{\n" +
@@ -45,7 +51,7 @@ public class WebSocketMessage extends BaseMessage{
                 "        {\n" +
                 "            \"subject\": "+ subject +",\n" +
                 "            \"body\": {\n" +
-                "             " + value +
+                "             " + data +
                 "            }\n" +
                 "        }\n" +
                 "    ],\n" +

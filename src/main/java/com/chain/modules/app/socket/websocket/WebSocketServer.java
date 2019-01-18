@@ -10,7 +10,6 @@ import com.chain.config.CommonDataDefine;
 import com.chain.config.JedisNameConstants;
 import com.chain.modules.app.entity.message.WebSocketMessage;
 import com.chain.modules.app.socket.socketio.SocketIoClient;
-import io.socket.client.Ack;
 import io.socket.client.Socket;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,7 +19,6 @@ import org.springframework.web.socket.client.WebSocketClient;
 import javax.websocket.*;
 import javax.websocket.server.ServerEndpoint;
 import java.io.IOException;
-import java.time.Instant;
 import java.util.Map;
 
 
@@ -63,7 +61,7 @@ public class WebSocketServer {
                     rtype = ((JSONArray) mapType.get(key)).getString(0);
                     data = ((JSONArray) mapType.get(key)).getJSONObject(1);
                     subject = data.getString("subject");
-                    body = data.get(body);
+                    body = data.get("body");
                     continue;
                 }
                 if (key.toString().equals("userid")) {
@@ -108,14 +106,15 @@ public class WebSocketServer {
         }
 
 
-        if (rtype.equals("logout")) {
+      /*  if (rtype.equals("logout")) {
             if (ruserid != null) {
                 processLogout(ruserid, session);
             } else {
                 log.info("userid ==null");
                 return;
             }
-        } else if (rtype.equals("ping")) {
+        } else*/
+        if (rtype.equals("ping")) {
             processPing(rctime, rtype, session);
         } else {
             if (ruserid != null) {
@@ -211,10 +210,7 @@ public class WebSocketServer {
      */
     private void handleExplorer(String ruserid,String type, String subject ,Object data ,String vers , Session session) {
         Socket socket = SocketIoClient.getConnect();
-        socket.emit(subject,data,(Ack)(args)->{
-
-        });
-
+        socket.emit(subject,data);
     }
 
 

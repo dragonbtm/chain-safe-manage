@@ -26,7 +26,7 @@ public class SocketIoClient {
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
 
-    private static String[] onTypes = new String[] {"start","next","prev","new","info","highlightNode","nextPageTransactions"};
+    private static String[] onTypes = new String[] {"start","next","prev","new","info","highlightNode","nextPageTransactions","addressInfo"};
 
 
     public static Socket getConnect() {
@@ -59,16 +59,6 @@ public class SocketIoClient {
     }
 
 
-//    String backMessage = new WebSocketMessage.Builder()
-//            .userid(ruserid)
-//            .type(type)
-//            .subject(subject)
-//            .vers(vers)
-//            .ctime(Instant.now().toString())
-//            .value(args)
-//            .build()
-//            .backUpMessage();
-//            session.getAsyncRemote().sendText(backMessage);
 
     /**
      * 链接浏览器  通讯
@@ -105,29 +95,29 @@ public class SocketIoClient {
                 }
             });
 
-            socket.on("start",(args)->{
-                sendtoexplore(args);
+            socket.on(onTypes[0],(args)->{
+                sendtoexplore(args , onTypes[0]);
             });
-            socket.on("next",(args)->{
-                sendtoexplore(args);
+            socket.on(onTypes[1],(args)->{
+                sendtoexplore(args , onTypes[0]);
             });
-            socket.on("prev",(args)->{
-                sendtoexplore(args);
+            socket.on(onTypes[2],(args)->{
+                sendtoexplore(args , onTypes[0]);
             });
-            socket.on("new",(args)->{
-                sendtoexplore(args);
+            socket.on(onTypes[3],(args)->{
+                sendtoexplore(args , onTypes[0]);
             });
-            socket.on("info",(args)->{
-                sendtoexplore(args);
+            socket.on(onTypes[4],(args)->{
+                sendtoexplore(args , onTypes[0]);
             });
-            socket.on("highlightNode",(args)->{
-                sendtoexplore(args);
+            socket.on(onTypes[5],(args)->{
+                sendtoexplore(args , onTypes[0]);
             });
-            socket.on("nextPageTransactions",(args)->{
-                sendtoexplore(args);
+            socket.on(onTypes[6],(args)->{
+                sendtoexplore(args , onTypes[0]);
             });
-            socket.on("addressInfo",(args)->{
-                sendtoexplore(args);
+            socket.on(onTypes[7],(args)->{
+                sendtoexplore(args , onTypes[0]);
             });
 
 
@@ -145,13 +135,13 @@ public class SocketIoClient {
      * 发送数据到浏览器
      * @param args
      */
-    private void sendtoexplore(Object[] args) {
+    private void sendtoexplore(Object[] args,String type) {
         CommonDataDefine.wsMgUserMap.forEach((key, session)->{
             String backMessage = new WebSocketMessage.Builder()
                     .userid(key)
                     .ctime(Instant.now().toString())
-                    .subject("login")
-                    .type("login")
+                    .subject("explorer")
+                    .type(type)
                     .value(args)
                     .vers(CommonConfig.getVers())
                     .build()
