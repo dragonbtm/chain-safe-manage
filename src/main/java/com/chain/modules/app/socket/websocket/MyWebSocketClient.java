@@ -1,6 +1,8 @@
 package com.chain.modules.app.socket.websocket;
 
 
+import com.chain.config.CommonConfig;
+import com.chain.config.CommonDataDefine;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.drafts.Draft;
 import org.java_websocket.handshake.ServerHandshake;
@@ -27,7 +29,25 @@ public class MyWebSocketClient extends WebSocketClient {
         super(serverUri, draft);
     }
 
-    public MyWebSocketClient(URI serverURI) {
+
+    public static WebSocketClient getConnect() throws URISyntaxException {
+        WebSocketClient webSocketClient = CommonDataDefine.websocketClientMap.get(CommonConfig.WSClientName);
+        if(webSocketClient != null) {
+            return webSocketClient;
+        }else {
+            String url = CommonConfig.getWs_protocol() + CommonConfig.getWsUrl();
+            URI uri = new URI(url);
+            webSocketClient = new MyWebSocketClient(uri);
+            webSocketClient.connect();
+            CommonDataDefine.websocketClientMap.put(CommonConfig.WSClientName,webSocketClient);
+            return webSocketClient;
+        }
+
+
+
+    }
+
+    private MyWebSocketClient(URI serverURI) {
         super(serverURI);
     }
 

@@ -12,6 +12,8 @@ server:
 client:
   ws_protocol: ws://
   wsUrl: 192.168.5.149:8286
+  wsVers: "1.0.0"
+  socketio: http://192.168.5.149:8089
 
 spring:
   # 环境 dev|test|prod

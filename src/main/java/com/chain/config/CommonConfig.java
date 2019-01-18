@@ -19,12 +19,47 @@ public class CommonConfig {
 		return "\r\nNODENO[" + NODENO + "]\r\n";
 	}
 
+
+	//websocket客户端链接名
+	public static String WSClientName = "ChainService";
+	//explorer 链接名
+	public static String ExplorerName = "explorer";
+
+
+
+
+
+
 	//websocket链接信息
-
+	//是否使用https
 	private static String ws_protocol;
-
-
+	//websocket url
 	private static String wsUrl;
+	//版本号
+	private static String vers;
+
+
+	//explor  socketio 通讯
+	private static String socketio;
+
+
+	public static String getVers() {
+		return vers;
+	}
+
+	@Value("${client.wsVers}")
+	public void setVers(String vers) {
+		this.vers = vers;
+	}
+
+	public static String getSocketio() {
+		return socketio;
+	}
+
+	@Value("${client.socketio}")
+	public void setSocketio(String socketio) {
+		this.socketio = socketio;
+	}
 
 	public static String getWs_protocol() {
 		return ws_protocol;

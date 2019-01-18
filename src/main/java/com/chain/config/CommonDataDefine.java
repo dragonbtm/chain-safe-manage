@@ -11,7 +11,9 @@ public class CommonDataDefine {
 
     public static Map<String, Session> wsMgUserMap = new ConcurrentHashMap<>();
 
-    public static Map<String, WebSocketClient> wsMgClientMap = new ConcurrentHashMap<>();
+
+
+    public static Map<String, WebSocketClient> websocketClientMap = new ConcurrentHashMap<>();
 
     public static Map<String, Socket> socketIOClientMap = new ConcurrentHashMap<>();
 }
